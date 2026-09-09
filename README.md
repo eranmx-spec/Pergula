@@ -60,6 +60,23 @@ git push
 
 ---
 
+## הפעלת GitHub Pages — פעם אחת
+
+הקוד כבר ב-`main`, אבל Pages עדיין כבוי בריפו. הפעלה חד-פעמית:
+
+**Settings ← Pages ← Source: „Deploy from a branch" ← Branch: `main` / `(root)` ← Save**
+
+תוך דקה-שתיים הדף יעלה לכתובת:
+<https://eranmx-spec.github.io/Pergula/>
+
+מכאן והלאה כל `git push` ל-`main` מתעדכן באתר אוטומטית.
+
+> ניסיתי להפעיל את Pages דרך GitHub Actions, אבל ה-`GITHUB_TOKEN` של
+> workflow לא יכול להפעיל Pages בריפו שבו הוא מעולם לא הופעל — ולכן
+> הצעד הזה חייב להיעשות פעם אחת מהממשק.
+
+---
+
 ## מבנה
 
 | קובץ | תפקיד |
