@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # enablement:true מפעיל את Pages בריפו אם הוא עדיין כבוי,
+      # כך שאין צורך לגעת בהגדרות ידנית
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      # מעלים את שורש הפרויקט. index.html כבר בנוי ונמצא ב-repo,
+      # ו-.nojekyll מונע מ-Jekyll לבלוע קבצים
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
