@@ -60,14 +60,47 @@ git push
 
 ---
 
-## הפעלת GitHub Pages — פעם אחת
+## עלייה לאוויר על pergula.online
 
-הקוד כבר ב-`main`, אבל Pages עדיין כבוי בריפו. הפעלה חד-פעמית:
+הקוד כבר ב-`main`, וקובץ `CNAME` בשורש מצהיר על הדומיין. נשארו שני
+שלבים ידניים, **בסדר הזה**.
+
+### א. DNS ב-Namecheap
+
+Domain List ← Manage ← **Advanced DNS**.
+
+קודם **מוחקים** את שתי רשומות החנייה שקיימות שם כברירת מחדל — הן
+מתנגשות עם GitHub:
+
+| למחוק | |
+|---|---|
+| `A Record` | `@` → `192.64.119.72` |
+| `CNAME Record` | `www` → `parkingpage.namecheap.com` |
+
+אם יש גם `URL Redirect Record` על `@` — למחוק גם אותו.
+
+ואז מוסיפים חמש רשומות:
+
+| Type | Host | Value | TTL |
+|---|---|---|---|
+| A Record | `@` | `185.199.108.153` | Automatic |
+| A Record | `@` | `185.199.109.153` | Automatic |
+| A Record | `@` | `185.199.110.153` | Automatic |
+| A Record | `@` | `185.199.111.153` | Automatic |
+| CNAME Record | `www` | `eranmx-spec.github.io.` | Automatic |
+
+ארבע כתובות ה-A הן שרתי GitHub Pages, וארבעתן נחוצות. ה-CNAME של
+`www` גורם ל-`www.pergula.online` להפנות לדומיין הראשי.
+
+### ב. הפעלת Pages ב-GitHub
 
 **Settings ← Pages ← Source: „Deploy from a branch" ← Branch: `main` / `(root)` ← Save**
 
-תוך דקה-שתיים הדף יעלה לכתובת:
-<https://eranmx-spec.github.io/Pergula/>
+בשדה Custom domain אמור להופיע `pergula.online` מעצמו, מתוך קובץ ה-CNAME.
+
+אחרי ש-GitHub מסיים לאמת את הדומיין, מסמנים **Enforce HTTPS**. התיבה
+הזו אפורה עד שהתעודה מונפקת — זה יכול לקחת עד שעה מרגע שה-DNS מתעדכן,
+וזה תקין.
 
 מכאן והלאה כל `git push` ל-`main` מתעדכן באתר אוטומטית.
 
