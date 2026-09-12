@@ -1,0 +1,54 @@
+<a class="skip" href="#main">דילוג לתוכן הראשי</a>
+
+<div class="read-guide" aria-hidden="true"></div>
+
+<button class="a11y-open" type="button" id="a11y-open" aria-expanded="false" aria-controls="a11y-panel" aria-label="תפריט נגישות">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="12" cy="7.2" r="1.25" fill="currentColor" stroke="none"/>
+    <path d="M6.8 10h10.4"/>
+    <path d="M12 10v4.2"/>
+    <path d="M12 14.2l-2 3.6M12 14.2l2 3.6"/>
+  </svg>
+</button>
+
+<div class="a11y-panel" id="a11y-panel" role="dialog" aria-modal="false" aria-labelledby="a11y-title" hidden>
+  <div class="a11y-head">
+    <div>
+      <h2 id="a11y-title">נגישות</h2>
+      <p class="sub">ההעדפות נשמרות בדפדפן שלכם</p>
+    </div>
+    <button type="button" id="a11y-close" aria-label="סגירת תפריט הנגישות">&times;</button>
+  </div>
+
+  <p class="a11y-grp">גודל הטקסט</p>
+  <div class="a11y-row">
+    <button class="opt" type="button" data-a11y-size="0" aria-pressed="true">רגיל</button>
+    <button class="opt" type="button" data-a11y-size="1" aria-pressed="false">גדול</button>
+    <button class="opt" type="button" data-a11y-size="2" aria-pressed="false">יותר</button>
+    <button class="opt" type="button" data-a11y-size="3" aria-pressed="false">מקסימלי</button>
+  </div>
+
+  <p class="a11y-grp">תצוגה</p>
+  <div class="a11y-list">
+    <button class="opt" type="button" data-a11y="contrast" aria-pressed="false">ניגודיות גבוהה</button>
+    <button class="opt" type="button" data-a11y="gray" aria-pressed="false">גווני אפור</button>
+    <button class="opt" type="button" data-a11y="readable" aria-pressed="false">גופן קריא ומרווח</button>
+    <button class="opt" type="button" data-a11y="links" aria-pressed="false">הדגשת קישורים</button>
+  </div>
+
+  <p class="a11y-grp">ניווט וקריאה</p>
+  <div class="a11y-list">
+    <button class="opt" type="button" data-a11y="nomotion" aria-pressed="false">עצירת אנימציות</button>
+    <button class="opt" type="button" data-a11y="cursor" aria-pressed="false">סמן מוגדל</button>
+    <button class="opt" type="button" data-a11y="guide" aria-pressed="false">קו קריאה</button>
+  </div>
+
+  <button class="a11y-reset" type="button" id="a11y-reset">איפוס כל ההגדרות</button>
+
+  <p class="a11y-note">
+    ניווט מקלדת: <b>Tab</b> למעבר בין רכיבים, <b>Enter</b> או <b>רווח</b> להפעלה,
+    <b>Esc</b> לסגירת חלונות. בראש הדף יש קישור „דילוג לתוכן".<br>
+    <a href="accessibility.html">הצהרת נגישות ודרכי פנייה</a>
+  </p>
+</div>

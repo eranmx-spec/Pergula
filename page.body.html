@@ -86,10 +86,125 @@
   --shadow-img:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -18px rgba(0,0,0,.85);
 }
 
+/* ==========================================================
+   נגישות. הבלוק הזה בא אחרי הגדרות הגוונים בכוונה — כדי
+   שניגודיות גבוהה תנצח גם ערכת נושא בהירה וגם כהה.
+   ========================================================== */
+:root{--a11y-zoom:1}
+:root.a11y-fs-1{--a11y-zoom:1.12}
+:root.a11y-fs-2{--a11y-zoom:1.25}
+:root.a11y-fs-3{--a11y-zoom:1.45}
+.page,.float,.bot-panel{zoom:var(--a11y-zoom)}
+
+:root.a11y-contrast{
+  --bg:#000000;--bg-deep:#000000;--surface:#0B0B0B;--surface-2:#181818;
+  --ink:#FFFFFF;--ink-soft:#FFFFFF;--muted:#EDEDED;
+  --line:#FFFFFF;--line-soft:#9A9A9A;
+  --accent:#FFE100;--accent-deep:#FFE100;--accent-ink:#000000;--accent-quiet:#181818;
+  --honey:#FFE100;--honey-quiet:#181818;--danger:#FF8A7A;
+  --wa:#00E676;--wa-deep:#00C853;--wa-ink:#000000;
+  --sun:#000000;--shade:transparent;--grain:none;
+  --shadow:0 0 0 1px #FFFFFF;--shadow-img:0 0 0 1px #FFFFFF;
+}
+:root.a11y-contrast .hero-slats,:root.a11y-contrast .slat-rule{display:none}
+:root.a11y-contrast .band figcaption{background:#000;color:#FFF}
+:root.a11y-contrast .close-cta h2,:root.a11y-contrast .close-cta p{color:#FFE100}
+:root.a11y-contrast .cta-btn,:root.a11y-contrast .bot-btn.on-dark{color:#FFE100;border-color:#FFE100}
+:root.a11y-contrast .page img,:root.a11y-contrast .gal img{border:1px solid #FFF}
+
+:root.a11y-gray .page,:root.a11y-gray .float,:root.a11y-gray .bot-panel{filter:grayscale(1)}
+
+:root.a11y-links .page a,:root.a11y-links .bot-panel a{
+  text-decoration:underline !important;text-underline-offset:3px;
+  outline:1px dashed currentColor;outline-offset:2px;
+}
+
+:root.a11y-readable .page,:root.a11y-readable .bot-panel,
+:root.a11y-readable .page h1,:root.a11y-readable .page h2,:root.a11y-readable .page h3,
+:root.a11y-readable .page .eyebrow,:root.a11y-readable .page .spec,
+:root.a11y-readable .page .trust li,:root.a11y-readable .page .specs-list .v{
+  font-family:Arial,"Segoe UI",system-ui,sans-serif !important;
+  letter-spacing:.015em;
+}
+:root.a11y-readable .page,:root.a11y-readable .bot-panel{line-height:1.9}
+:root.a11y-readable .page p,:root.a11y-readable .page li{word-spacing:.08em}
+
+:root.a11y-nomotion *,:root.a11y-nomotion *::before,:root.a11y-nomotion *::after{
+  animation:none !important;transition:none !important;scroll-behavior:auto !important;
+}
+
+:root.a11y-cursor,:root.a11y-cursor *{
+  cursor:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 3l0 32 8.5-8.5L23 43l6-2.5-6.5-14L34 26z' fill='%23000' stroke='%23fff' stroke-width='2.5'/%3E%3C/svg%3E") 6 3,auto !important;
+}
+
+/* קו קריאה — נע עם הסמן */
+.read-guide{
+  position:fixed;inset-inline:0;height:42px;z-index:70;pointer-events:none;
+  border-block:2px solid var(--honey);background:rgba(185,122,43,.10);display:none;
+}
+:root.a11y-guide .read-guide{display:block}
+
+/* דילוג לתוכן — מופיע רק במיקוד מקלדת */
+.skip{
+  position:fixed;top:-100px;inset-inline-start:14px;z-index:100;
+  background:var(--accent);color:var(--accent-ink);
+  font-family:"Heebo",sans-serif;font-weight:700;font-size:15px;
+  padding:12px 20px;border-radius:0 0 3px 3px;text-decoration:none;
+  transition:top .15s;
+}
+.skip:focus{top:0}
+
+/* ---- לחצן ותפריט הנגישות ---- */
+.a11y-open{
+  position:fixed;bottom:18px;right:18px;z-index:60;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);border:2px solid var(--surface);
+  display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 6px 22px -6px rgba(0,0,0,.55);transition:background .16s,transform .16s;
+}
+.a11y-open:hover{background:var(--accent-deep);transform:translateY(-2px)}
+.a11y-open svg{width:28px;height:28px;display:block}
+
+.a11y-panel{
+  position:fixed;bottom:80px;right:18px;z-index:61;
+  width:min(310px,calc(100vw - 36px));
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;
+  max-height:min(74vh,600px);overflow-y:auto;
+}
+.a11y-panel h2{font-family:"Frank Ruhl Libre",Georgia,serif;font-size:18px;margin:0 0 2px}
+.a11y-panel .sub{font-family:"Heebo",sans-serif;font-size:12px;color:var(--muted);margin:0 0 14px}
+.a11y-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.a11y-head button{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px}
+.a11y-head button:hover{color:var(--ink)}
+.a11y-grp{font-family:"Heebo",sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin:14px 0 7px}
+.a11y-row{display:flex;gap:6px}
+.a11y-panel button.opt{
+  font-family:"Heebo",sans-serif;font-size:13.5px;font-weight:500;text-align:start;
+  background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:3px;padding:9px 12px;cursor:pointer;width:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  transition:background .14s,border-color .14s;
+}
+.a11y-panel button.opt:hover{border-color:var(--accent)}
+.a11y-panel button.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.a11y-panel button.opt[aria-pressed="true"]::after{content:"✓";font-weight:700}
+.a11y-row button.opt{justify-content:center}
+.a11y-list{display:flex;flex-direction:column;gap:6px}
+.a11y-reset{
+  width:100%;margin-top:14px;font-family:"Heebo",sans-serif;font-weight:700;font-size:14px;
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--line);
+  border-radius:3px;padding:10px;cursor:pointer;
+}
+.a11y-reset:hover{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.a11y-note{font-family:"Heebo",sans-serif;font-size:11.5px;color:var(--muted);margin:12px 0 0;line-height:1.6}
+.a11y-note a{color:var(--accent);font-weight:600}
+
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);margin:0}
+/* חייב להיות עם !important: ל-.bot יש display:flex שגובר על ברירת המחדל של [hidden] */
+[hidden]{display:none !important}
+body{background:var(--bg);color:var(--ink);margin:0;direction:rtl}
 .page{
-  direction:rtl;
   font-family:"Assistant","Segoe UI",system-ui,sans-serif;
   font-size:17px;line-height:1.65;
   background:var(--bg);color:var(--ink);
@@ -307,18 +422,108 @@ body{background:var(--bg);color:var(--ink);margin:0}
 .foot{display:flex;flex-wrap:wrap;gap:14px 28px;justify-content:space-between;align-items:center}
 .page footer a{color:var(--ink-soft);text-decoration:none}
 .page footer a:hover{text-decoration:underline}
+.foot-legal{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--muted)}
+.foot-legal a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.foot-legal a:hover{color:var(--ink)}
 
-/* ---------------- floating whatsapp ---------------- */
-.float{position:fixed;bottom:18px;left:18px;z-index:40}
-.float a{
-  display:flex;align-items:center;gap:10px;
-  background:var(--wa);color:var(--wa-ink);text-decoration:none;
+/* ---------------- כפתורים צפים ---------------- */
+.float{position:fixed;bottom:18px;left:18px;z-index:40;display:flex;gap:9px}
+.float a,.float button{
+  display:flex;align-items:center;gap:9px;
+  text-decoration:none;border:none;cursor:pointer;
   font-family:"Heebo",sans-serif;font-weight:700;font-size:15px;
-  padding:13px 20px;border-radius:999px;
+  padding:13px 19px;border-radius:999px;
   box-shadow:0 6px 22px -6px rgba(0,0,0,.55);transition:background .16s,transform .16s;
 }
-.float a:hover{background:var(--wa-deep);transform:translateY(-2px)}
-.float svg{width:23px;height:23px;flex:none;fill:currentColor}
+.float .f-wa{background:var(--wa);color:var(--wa-ink)}
+.float .f-wa:hover{background:var(--wa-deep);transform:translateY(-2px)}
+.float .f-bot{background:var(--accent);color:var(--accent-ink)}
+.float .f-bot:hover{background:var(--accent-deep);transform:translateY(-2px)}
+.float svg{width:22px;height:22px;flex:none}
+.float .f-wa svg{fill:currentColor}
+.float .lbl-tight{display:none}
+
+/* ---------------- כפתור האשף ---------------- */
+.bot-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:"Heebo",sans-serif;font-weight:700;font-size:16px;
+  background:var(--surface);color:var(--accent);text-decoration:none;
+  border:1.5px solid var(--accent);padding:11.5px 20px;border-radius:3px;cursor:pointer;
+  transition:background .16s,color .16s,transform .06s;
+}
+.bot-btn:hover{background:var(--accent);color:var(--accent-ink)}
+.bot-btn:active{transform:translateY(1px)}
+.bot-btn svg{width:20px;height:20px;flex:none}
+.bot-btn.sm{font-size:14.5px;padding:8px 15px}
+.bot-btn.sm svg{width:17px;height:17px}
+.bot-btn.block{width:100%;justify-content:center}
+.bot-btn.on-dark{background:transparent;color:#FBF6EF;border-color:rgba(251,246,239,.55)}
+.bot-btn.on-dark:hover{background:rgba(251,246,239,.12);color:#FBF6EF}
+.cta-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* ---------------- חלון האשף ---------------- */
+.bot{position:fixed;inset:0;z-index:90;display:flex;align-items:flex-end;justify-content:center}
+.bot-backdrop{position:absolute;inset:0;background:rgba(26,16,8,.55);border:none;padding:0;cursor:pointer}
+.bot-panel{
+  position:relative;display:flex;flex-direction:column;
+  width:min(480px,100%);height:min(640px,90vh);
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;
+  box-shadow:0 -8px 60px -12px rgba(0,0,0,.55);
+  margin-bottom:0;overflow:hidden;
+}
+@media (min-width:640px){
+  .bot{align-items:center}
+  .bot-panel{border-radius:var(--radius);height:min(640px,84vh)}
+}
+.bot-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;background:var(--accent);color:var(--accent-ink)}
+.bot-id{display:flex;align-items:center;gap:11px;min-width:0}
+.bot-id svg{width:30px;height:30px;flex:none}
+.bot-id strong{font-family:"Frank Ruhl Libre",Georgia,serif;font-size:18px;font-weight:700;display:block;line-height:1.2}
+.bot-id span{font-family:"Heebo",sans-serif;font-size:12px;opacity:.82;display:block;line-height:1.3;margin-top:2px}
+.bot-x{background:none;border:none;color:inherit;font-size:26px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:3px;opacity:.85}
+.bot-x:hover{opacity:1;background:rgba(255,255,255,.14)}
+.bot-progress{height:3px;background:var(--line-soft);flex:none}
+.bot-progress i{display:block;height:100%;width:0;background:var(--honey);transition:width .3s ease}
+@media (prefers-reduced-motion: reduce){.bot-progress i{transition:none}}
+
+.bot-log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+.bub{max-width:84%;padding:11px 14px;border-radius:12px;font-size:15.5px;line-height:1.6;white-space:pre-wrap}
+.bub.bot{align-self:flex-start;background:var(--surface-2);color:var(--ink);border-bottom-right-radius:3px}
+.bub.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-left-radius:3px}
+.bub.note{align-self:flex-start;background:var(--honey-quiet);border:1px solid var(--honey);font-size:14.5px;max-width:92%}
+.bub.sum{align-self:flex-start;background:var(--bg);border:1px solid var(--line);max-width:100%;font-size:14.5px;font-family:"Heebo",sans-serif}
+.bub.sum b{color:var(--accent)}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:13px 15px;background:var(--surface-2);border-radius:12px;border-bottom-right-radius:3px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1.3s infinite}
+.typing i:nth-child(2){animation-delay:.18s}
+.typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,60%,100%{opacity:.28}30%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.typing i{animation:none;opacity:.6}}
+
+.bot-foot{border-top:1px solid var(--line);padding:12px 14px;background:var(--surface);flex:none}
+.bot-opts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.bot-opts:empty{display:none}
+.bot-opts button{
+  font-family:"Heebo",sans-serif;font-size:14px;font-weight:500;
+  background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:999px;padding:8px 15px;cursor:pointer;transition:background .14s,border-color .14s,color .14s;
+}
+.bot-opts button:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.bot-row{display:flex;gap:8px}
+.bot-row input{
+  flex:1;font-family:inherit;font-size:16px;color:var(--ink);background:var(--bg);
+  border:1px solid var(--line);border-radius:3px;padding:11px 13px;min-width:0;
+}
+.bot-row input:focus{border-color:var(--accent);background:var(--surface)}
+.bot-row button{
+  flex:none;width:46px;background:var(--accent);color:var(--accent-ink);
+  border:none;border-radius:3px;cursor:pointer;font-size:19px;line-height:1;
+}
+.bot-row button:hover{background:var(--accent-deep)}
+.bot-hint{font-family:"Heebo",sans-serif;font-size:11.5px;color:var(--muted);margin-top:8px;text-align:center}
+.bot-done{display:flex;flex-direction:column;gap:8px}
+.bot-done .wa-btn{justify-content:center}
 
 @media (max-width:980px){
   .hero-grid{grid-template-columns:1fr;gap:34px}
@@ -340,9 +545,17 @@ body{background:var(--bg);color:var(--ink);margin:0}
   .gal{grid-template-columns:1fr}
   .gal figure:first-child{grid-column:span 1}
   .gal figure:first-child img{aspect-ratio:685/348}
-  .nav .wa-btn{padding:8px 13px;font-size:13.5px}
-  .float{bottom:14px;left:14px;right:14px}
-  .float a{justify-content:center;border-radius:4px}
+  .nav .wa-btn{padding:8px 12px;font-size:13px}
+  .nav .bot-btn{display:none}
+  .cta-pair{grid-template-columns:1fr}
+  /* הכפתורים הצפים מפנים מקום ללחצן הנגישות בפינה הנגדית */
+  .float{bottom:12px;left:12px;right:76px;gap:8px}
+  .float a,.float button{flex:1;justify-content:center;border-radius:4px;padding:13px 8px;font-size:14px}
+  .float .lbl-wide{display:none}
+  .float .lbl-tight{display:inline}
+  .a11y-open{bottom:12px;right:12px;width:48px;height:48px}
+  .a11y-open svg{width:25px;height:25px}
+  .a11y-panel{bottom:70px;right:12px}
 }
 </style>
 
@@ -360,12 +573,19 @@ body{background:var(--bg);color:var(--ink);margin:0}
     </svg>
     <span><span class="brand-name">עץ וצל</span><span class="brand-sub">נגרות חוץ</span></span>
   </a>
-  <a class="wa-btn sm" href="#" data-wa target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
-    כתבו לנו בוואטסאפ
-  </a>
+  <span style="display:flex;gap:8px;align-items:center">
+    <button class="bot-btn sm" type="button" data-bot-open>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
+      אשף הפרויקט
+    </button>
+    <a class="wa-btn sm" href="#" data-wa target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+      וואטסאפ
+    </a>
+  </span>
 </header>
 
+<main id="main">
 <section class="hero" id="top">
   <div class="hero-ground" aria-hidden="true"></div>
   <div class="hero-slats" aria-hidden="true"></div>
@@ -432,11 +652,18 @@ body{background:var(--bg);color:var(--ink);margin:0}
         <button class="btn" type="submit">שליחה ותיאום מדידה</button>
         <p class="legal">נחזור אליכם תוך יום עסקים אחד. הפרטים משמשים ליצירת קשר בלבד.</p>
 
-        <p class="or">או ישר בוואטסאפ</p>
-        <a class="wa-btn block" href="#" data-wa target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
-          שליחת הודעה
-        </a>
+        <p class="or">או בלי למלא טופס</p>
+        <div class="cta-pair">
+          <button class="bot-btn" type="button" data-bot-open>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
+            אשף הפרויקט
+          </button>
+          <a class="wa-btn" href="#" data-wa target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+            וואטסאפ
+          </a>
+        </div>
+        <p class="legal">האשף שואל כמה שאלות ומרכיב מזה סיכום מוכן לשליחה.</p>
         <div class="formerr" role="alert"></div>
       </form>
 
@@ -687,6 +914,11 @@ body{background:var(--bg);color:var(--ink);margin:0}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
         פתיחת שיחה בוואטסאפ
       </a>
+      <p class="or">לא בטוחים מה לכתוב?</p>
+      <button class="bot-btn block" type="button" data-bot-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
+        שיענה לי האשף
+      </button>
       <p class="why-num" data-wa-num>055-927-2777</p>
     </div>
   </div>
@@ -701,10 +933,15 @@ body{background:var(--bg);color:var(--ink);margin:0}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
         כתבו לנו בוואטסאפ
       </a>
+      <button class="bot-btn on-dark" type="button" data-bot-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
+        אשף הפרויקט
+      </button>
       <a class="cta-btn" href="#form">למילוי הפרטים</a>
     </div>
   </div>
 </section>
+</main>
 
 <div class="slat-rule" aria-hidden="true"></div>
 <footer>
@@ -712,15 +949,49 @@ body{background:var(--bg);color:var(--ink);margin:0}
     <span>עץ וצל · נגרות חוץ · פרגולות, דקים, מעקות וגדרות</span>
     <span>וואטסאפ <a href="#" data-wa target="_blank" rel="noopener"><span data-wa-num>055-927-2777</span></a></span>
   </div>
+  <div class="wrap foot foot-legal">
+    <span><a href="terms.html">תנאי שימוש</a> · <a href="terms.html#privacy">פרטיות</a> · <a href="accessibility.html">הצהרת נגישות</a></span>
+    <span>המידע בדף הוא כללי. הצעה מחייבת נמסרת בכתב בלבד, לאחר מדידה.</span>
+  </div>
 </footer>
 
-<div class="float">
-  <a href="#" data-wa target="_blank" rel="noopener">
+</div><!-- /.page — מכאן ומטה אלמנטים צפים, מחוץ למכל שמוגדל בהגדלת טקסט -->
+
+<div class="float"><!-- dir יורש מ-html -->
+  <button class="f-bot" type="button" data-bot-open>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
+    <span class="lbl-wide">אשף הפרויקט</span><span class="lbl-tight">אשף</span>
+  </button>
+  <a class="f-wa" href="#" data-wa target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
-    כתבו לנו בוואטסאפ
+    <span class="lbl-wide">כתבו לנו בוואטסאפ</span><span class="lbl-tight">וואטסאפ</span>
   </a>
 </div>
 
+<div class="bot" id="bot" hidden>
+  <button class="bot-backdrop" type="button" data-bot-close aria-label="סגירת האשף"></button>
+  <div class="bot-panel" role="dialog" aria-modal="true" aria-labelledby="bot-title">
+    <header class="bot-head">
+      <div class="bot-id">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.3"/></svg>
+        <span>
+          <strong id="bot-title">אשף הפרויקט</strong>
+          <span>כמה שאלות, ואז סיכום מוכן לוואטסאפ</span>
+        </span>
+      </div>
+      <button class="bot-x" type="button" data-bot-close aria-label="סגירה">&times;</button>
+    </header>
+    <div class="bot-progress" role="presentation"><i></i></div>
+    <div class="bot-log" id="bot-log" aria-live="polite"></div>
+    <div class="bot-foot">
+      <div class="bot-opts" id="bot-opts"></div>
+      <form class="bot-row" id="bot-row" autocomplete="off">
+        <input id="bot-text" type="text" aria-label="ההודעה שלך" placeholder="אפשר גם לשאול אותי שאלה">
+        <button type="submit" aria-label="שליחה">&#8592;</button>
+      </form>
+      <p class="bot-hint">האשף לא מוסר מחירים — מחיר נקבע רק אחרי מדידה.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -730,18 +1001,11 @@ body{background:var(--bg);color:var(--ink);margin:0}
   /* ==================================================================
      הגדרות — זה כל מה שצריך לערוך בקובץ
      ================================================================== */
-  var CONFIG = {
-    // כתובת ה-Web App של Google Apps Script. ראו README.md
-    endpoint: "PASTE_YOUR_APPS_SCRIPT_URL_HERE",
-    // וואטסאפ בפורמט בינלאומי, בלי + ובלי מקפים
-    whatsapp: "972559272777",
-    // אותו מספר כפי שיוצג בדף
-    whatsappDisplay: "055-927-2777"
-  };
-  /* ================================================================== */
+  // ההגדרות עצמן יושבות ב-partials/config.js, ומוזרקות לכל העמודים
+  var CONFIG = window.PERGULA || {};
 
-  var configured = CONFIG.endpoint.indexOf("http") === 0;
-  var waText = encodeURIComponent("היי, הגעתי מהאתר ואשמח להצעת מחיר");
+  var configured = String(CONFIG.endpoint).indexOf("http") === 0;
+  var waText = encodeURIComponent(CONFIG.whatsappText || "");
   var waHref = "https://wa.me/" + CONFIG.whatsapp + "?text=" + waText;
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
@@ -769,6 +1033,18 @@ body{background:var(--bg);color:var(--ink);margin:0}
   function normalizePhone(raw) {
     var d = String(raw).replace(/[^\d+]/g, "").replace(/^\+?972/, "0").replace(/\D/g, "");
     return /^0(5\d|7\d|[23489])\d{7}$/.test(d) ? d : null;
+  }
+
+  // נשלח כ-text/plain כדי להימנע מבקשת preflight מול Apps Script.
+  // נדחה כשאין endpoint מוגדר, כדי שהקורא יציג מצב תצוגה.
+  function sendLead(lead) {
+    if (!configured) return Promise.reject(new Error("not_configured"));
+    return fetch(CONFIG.endpoint, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(lead)
+    });
   }
 
   ["name", "phone", "address"].forEach(function (n) {
@@ -821,13 +1097,7 @@ body{background:var(--bg);color:var(--ink);margin:0}
       return;
     }
 
-    // נשלח כ-text/plain כדי להימנע מבקשת preflight מול Apps Script
-    fetch(CONFIG.endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(lead)
-    }).then(function () {
+    sendLead(lead).then(function () {
       card.classList.add("is-done");
     })["catch"](function () {
       btn.disabled = false;
@@ -838,6 +1108,347 @@ body{background:var(--bg);color:var(--ink);margin:0}
         'זה מגיע אלינו ישר.';
       errBox.style.display = "block";
     });
+  });
+
+
+  /* ==================================================================
+     אשף הפרויקט
+     ------------------------------------------------------------------
+     שאלון מסועף שמרכיב סיכום ושולח אותו לוואטסאפ. בדרך הוא עונה על
+     שאלות נפוצות מתוך טבלת FAQ. אין כאן מודל שפה — דף סטטי לא יכול
+     להחזיק מפתח API בבטחה — ולכן על כל מה שאין לו תשובה מוגדרת הוא
+     אומר זאת במפורש ומעביר את השאלה בסיכום, במקום לנחש.
+     ================================================================== */
+
+  var botEl   = document.getElementById("bot");
+  var logEl   = document.getElementById("bot-log");
+  var optsEl  = document.getElementById("bot-opts");
+  var rowEl   = document.getElementById("bot-row");
+  var textEl  = document.getElementById("bot-text");
+  var panelEl = botEl.querySelector(".bot-panel");
+  var progEl  = botEl.querySelector(".bot-progress i");
+
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // שאלות שנשאלות בכל מסלול, בסוף
+  var TAIL = [
+    { key:"timing", label:"לוח זמנים", q:"מתי הייתם רוצים שזה יקרה?",
+      opts:["בהקדם האפשרי","בחודש עד שלושה","בודק מחירים להמשך"] },
+    { key:"name", label:"שם", q:"איך קוראים לך?", ph:"שם מלא", validate:"name" },
+    { key:"phone", label:"וואטסאפ", q:"מה מספר הוואטסאפ שאליו נחזור?", ph:"050-0000000", validate:"phone" },
+    { key:"address", label:"יישוב וכתובת", q:"באיזה יישוב, ומה הכתובת?", ph:"רחוב ומספר, יישוב", validate:"address" },
+    { key:"extra", label:"הערות", q:"עוד משהו שחשוב שנדע לפני המדידה?", ph:"אפשר גם לדלג", optional:true }
+  ];
+
+  var BY_TYPE = {
+    "פרגולה": [
+      { key:"place", label:"מיקום", q:"איפה הפרגולה אמורה לעמוד?", opts:["מרפסת","חצר","גג","חניה"] },
+      { key:"size", label:"מידות", q:"מה המידות המשוערות? גם הערכה גסה עוזרת לנו.", ph:"לדוגמה 4 על 3 מטר" },
+      { key:"mount", label:"סוג התקנה", q:"צמודה לקיר הבית, או עומדת בפני עצמה?", opts:["צמודה לקיר","עומדת בפני עצמה","עוד לא בטוח"] },
+      { key:"shade", label:"כמות צל", q:"כמה צל אתם רוצים מתחתיה?", opts:["מקסימלי, כמעט בלי שמש","בינוני, בערך שליש צל","קליל, בעיקר להגדיר מקום","שלבים מתכווננים"] },
+      { key:"material", label:"חומר", q:"יש העדפה לחומר?", opts:["עץ מלא","אלומיניום","שתמליצו לי"] }
+    ],
+    "דק": [
+      { key:"place", label:"מיקום", q:"איפה הדק אמור להיות?", opts:["מרפסת","חצר","סביב בריכה","גג"] },
+      { key:"size", label:"שטח משוער", q:"מה השטח המשוער? גם הערכה גסה עוזרת.", ph:"לדוגמה 20 מ״ר, או 5 על 4" },
+      { key:"base", label:"מה יש שם עכשיו", q:"על מה הדק יונח?", opts:["בטון","אריחים","אדמה או חצץ","דק ישן שצריך להחליף"] },
+      { key:"material", label:"חומר", q:"יש העדפה לחומר?", opts:["איפאה","גראפה","WPC","שתמליצו לי"] }
+    ],
+    "מעקה": [
+      { key:"place", label:"מיקום", q:"איפה המעקה?", opts:["מרפסת","גג","גרם מדרגות","סביב דק"] },
+      { key:"size", label:"אורך משוער", q:"מה האורך המשוער של המעקה?", ph:"לדוגמה 6 מטר" },
+      { key:"kids", label:"ילדים קטנים בבית", q:"יש ילדים קטנים בבית? זה קובע את המרווח בין הסורגים.", opts:["כן","לא"] },
+      { key:"material", label:"חומר", q:"יש העדפה לחומר?", opts:["עץ מלא","עץ עם כבלי נירוסטה","שתמליצו לי"] }
+    ],
+    "גדר": [
+      { key:"purpose", label:"מטרה", q:"מה הגדר צריכה לעשות?", opts:["הפרדה מהשכנים","פרטיות ומיסוך","מסתור אשפה או מזגנים","גידור חצר"] },
+      { key:"size", label:"אורך משוער", q:"מה האורך המשוער?", ph:"לדוגמה 12 מטר" },
+      { key:"height", label:"גובה מבוקש", q:"איזה גובה אתם צריכים?", opts:["עד 1.2 מ׳","1.2 עד 1.8 מ׳","1.8 עד 2.2 מ׳","לא בטוח"] },
+      { key:"density", label:"אטומה או מרווחת", q:"אטומה לגמרי, או עם מרווחים בין השלבים?", opts:["אטומה","מרווחת","שתמליצו לי"] }
+    ]
+  };
+
+  var GENERIC = [
+    { key:"which", label:"מה בונים", q:"מה בונים? אפשר לכתוב הכל בשורה אחת.", ph:"לדוגמה פרגולה ודק במרפסת" },
+    { key:"place", label:"מיקום", q:"איפה זה אמור להיות?", opts:["מרפסת","חצר","גג","חניה","כמה מקומות"] },
+    { key:"size", label:"מידות משוערות", q:"מה המידות או השטח המשוער?", ph:"לדוגמה 4 על 3 מטר" },
+    { key:"goal", label:"מה חשוב לכם", q:"מה הדבר הכי חשוב שזה יפתור?", opts:["צל","מראה ועיצוב","פרטיות","בטיחות","עוד לא בטוח"] }
+  ];
+
+  // תשובות לשאלות נפוצות. כל תשובה נשענת על מה שכתוב בדף עצמו.
+  var FAQ = [
+    { k:/מחיר|עלות|כמה זה|כמה יעל|תקציב|יקר|זול|הצעת מחיר/,
+      a:"מחיר אמיתי אפשר לתת רק אחרי מדידה — הוא תלוי במידות, בחומר ובסוג הקיר או הרצפה. מה שכן מובטח: ביקור המדידה ללא עלות, ואחריו תקבלו מחיר סופי בכתב, בלי סעיפים פתוחים." },
+    { k:/כמה זמן|מתי|לוח זמנים|תוך כמה|מהיר|דחוף/,
+      a:"אחרי המדידה ההצעה מגיעה תוך 2–4 ימים. הייצור בנגרייה לוקח 2–4 שבועות, וההתקנה עצמה 1–3 ימים." },
+    { k:/איזה עץ|סוג עץ|חומר|איפאה|גראפה|אורן|wpc|קומפוזיט|אלומיניום/i,
+      a:"איפאה וגראפה הם עצים קשים לדקים ולמעקות — מתאפרים לגוון כסוף ודורשים שמן פעם בשנה. אורן מחוסן מתאים לגדרות ולפרגולות ודורש לכה כל שנתיים. WPC כמעט לא דורש תחזוקה, רק שטיפה. אלומיניום צבוע בתנור לא דורש כלום." },
+    { k:/תחזוקה|שמן|לכה|לצבוע|לתחזק|מתאפר|אפור/,
+      a:"תלוי בחומר: עץ קשה כמו איפאה או גראפה — שמן פעם בשנה אם רוצים לשמר את הגוון החם, ואם לא, הוא יתאפר לכסוף וזה לא פוגע בו. אורן מחוסן — לכה כל שנתיים. WPC — שטיפה בלבד." },
+    { k:/אחריות|שנות אחריות|תקול|נשבר/,
+      a:"5 שנים על השלד ושנתיים על הגימור. בסיום ההתקנה אתם מקבלים גם הוראות תחזוקה כתובות." },
+    { k:/היתר|אישור|ועד|עירייה|רישוי|חוק|חוקי/,
+      a:"אנחנו מלווים מול הוועד ומול הרישוי, אבל הדרישות משתנות בין רשות לרשות ולפי גודל ומקום. במדידה נגיד לכם בדיוק מה נדרש אצלכם — בלי להבטיח מראש משהו שתלוי ברשות." },
+    { k:/תקן|1142|גובה מעקה|ילדים|בטיחות|סורגים/,
+      a:"מעקות מתוכננים בהתאם לת״י 1142: גובה 105 ס״מ ומרווח של עד 10 ס״מ בין הסורגים, כדי שילד קטן לא יוכל לעבור או להיתקע. העיגון לבטון נעשה בעוגן כימי M12." },
+    { k:/בריכה|רטיב|מים|ניקוז|להחליק|חלק|יירקב|ריקב/,
+      a:"סביב בריכה בונים עם שיפוע ניקוז של 1.5%, שלד מנוקז שלא אוגר מים מתחת לקרשים, וברגי נירוסטה A4 שלא מחלידים מכלור. זה בדיוק המקום שבו קיצורי דרך מתגלים אחרי שנתיים." },
+    { k:/צל|שלבים|מרווח בין|כמה צל|שמש/,
+      a:"מרווח 25 מ״מ בין השלבים נותן בערך 35% צל, ומרווח 15 מ״מ בערך 50%. אם רוצים שליטה מלאה, יש גם שלבים מתכווננים שנפתחים ונסגרים." },
+    { k:/מפתח|עמוד|טווח|קורה|באמצע/,
+      a:"אנחנו בונים מפתח של עד 6 מטר בלי עמוד ביניים, כך שהמרפסת נשארת פנויה. מעבר לזה נדרש עמוד או קורה נוספת, וזה משהו שנראה במדידה." },
+    { k:/איפה אתם|אזור|מגיעים|שירות|רחוק|צפון|דרום|מרכז/,
+      a:"זה תלוי ביישוב — ובגלל זה אני שואל אותו בהמשך. אחרי שהסיכום יישלח תקבלו תשובה ברורה אם אתם בטווח ההתקנה." },
+    { k:/תשלום|מקדמה|אשראי|תשלומים|חשבונית|מזומן/,
+      a:"תנאי תשלום זה משהו שעדיף שתשמעו מהנגר עצמו ולא ממני. אני מוסיף את השאלה לסיכום ותקבלו תשובה בוואטסאפ." }
+  ];
+
+  var queue = [], record = [], questions = [], answers = {};
+  var current = null, asked = 0, opener = null, started = false, finished = false;
+
+  function scrollLog() { logEl.scrollTop = logEl.scrollHeight; }
+
+  function bubble(text, cls) {
+    var d = document.createElement("div");
+    d.className = "bub " + cls;
+    d.textContent = text;
+    logEl.appendChild(d);
+    scrollLog();
+    return d;
+  }
+
+  function say(text, cls, done) {
+    var t = document.createElement("div");
+    t.className = "typing";
+    t.innerHTML = "<i></i><i></i><i></i>";
+    logEl.appendChild(t);
+    scrollLog();
+    window.setTimeout(function () {
+      t.parentNode && t.parentNode.removeChild(t);
+      bubble(text, cls || "bot");
+      if (done) done();
+    }, REDUCED ? 60 : 420);
+  }
+
+  function setProgress() {
+    var total = asked + queue.length + 1;
+    progEl.style.width = Math.round((asked / total) * 100) + "%";
+  }
+
+  function renderOpts(step) {
+    optsEl.innerHTML = "";
+    if (!step || !step.opts) return;
+    step.opts.forEach(function (o) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = o;
+      b.addEventListener("click", function () { accept(o); });
+      optsEl.appendChild(b);
+    });
+  }
+
+  function ask(step) {
+    current = step;
+    say(step.q, "bot", function () {
+      renderOpts(step);
+      textEl.placeholder = step.ph || "אפשר גם לשאול אותי שאלה";
+      setProgress();
+    });
+  }
+
+  function nextStep() {
+    if (!queue.length) return finish();
+    ask(queue.shift());
+  }
+
+  function answerFaq(txt) {
+    for (var i = 0; i < FAQ.length; i++) {
+      if (FAQ[i].k.test(txt)) { say(FAQ[i].a, "bot"); return true; }
+    }
+    return false;
+  }
+
+  // קלט חופשי בשאלת בחירה, או טקסט שנגמר בסימן שאלה, נחשב לשאלה של הלקוח
+  function handleQuestion(txt) {
+    questions.push(txt);
+    if (!answerFaq(txt)) {
+      say("זו שאלה טובה, ואני לא רוצה לנחש עליה תשובה. אני מעביר אותה בסיכום, ותקבלו עליה מענה בוואטסאפ.", "note");
+    }
+    window.setTimeout(function () {
+      if (current && !finished) say("נמשיך: " + current.q, "bot", function () { renderOpts(current); });
+    }, REDUCED ? 120 : 900);
+  }
+
+  // מחזיר {ok:true, value} או {ok:false, msg} — בלי לנחש מהו טקסט שגיאה
+  function validate(step, txt) {
+    if (step.validate === "phone") {
+      var p = normalizePhone(txt);
+      return p ? { ok:true, value:p }
+               : { ok:false, msg:"צריך מספר טלפון ישראלי — לדוגמה 0501234567. אפשר גם עם מקפים או עם 972+." };
+    }
+    if (step.validate === "name") {
+      return txt.length >= 2 ? { ok:true, value:txt }
+                             : { ok:false, msg:"רק שם, כדי שנדע איך לפנות אליכם." };
+    }
+    if (step.validate === "address") {
+      return txt.length >= 2 ? { ok:true, value:txt }
+                             : { ok:false, msg:"מספיק גם שם היישוב בלבד, אם הכתובת המדויקת לא נוחה לכם כאן." };
+    }
+    return { ok:true, value:txt };
+  }
+
+  function accept(value) {
+    if (!current || finished) return;
+    var step = current;
+
+    var res = validate(step, value);
+    bubble(value, "me");
+    if (!res.ok) {
+      say(res.msg, "note", function () { renderOpts(step); });
+      return;
+    }
+
+    optsEl.innerHTML = "";
+    answers[step.key] = res.value;
+    record.push({ label: step.label, value: res.value });
+    asked++;
+
+    // המסלול נבחר לפי סוג הפרויקט
+    if (step.key === "type") {
+      queue = (BY_TYPE[res.value] || GENERIC).concat(TAIL);
+    }
+
+    current = null;
+    nextStep();
+  }
+
+  function skipOrAnswer(step, txt) {
+    if (step.optional && /^(דלג|אין|לא|סיימתי|זהו|זה הכל)$/.test(txt)) return "—";
+    return txt;
+  }
+
+  rowEl.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var txt = textEl.value.trim();
+    if (!txt || finished) return;
+    textEl.value = "";
+
+    if (!current) { bubble(txt, "me"); handleQuestion(txt); return; }
+
+    // שאלת בחירה: כל טקסט חופשי הוא שאלה. שאלת טקסט: שאלה רק אם יש סימן שאלה.
+    if (current.opts || /\?\s*$/.test(txt)) {
+      bubble(txt, "me");
+      handleQuestion(txt);
+      return;
+    }
+    accept(skipOrAnswer(current, txt));
+  });
+
+  function waSummary() {
+    var out = ["היי, סיימתי את אשף הפרויקט באתר.", ""];
+    record.forEach(function (r) {
+      if (r.value && r.value !== "—") out.push("*" + r.label + ":* " + r.value);
+    });
+    if (questions.length) {
+      out.push("", "*שאלות שלי:*");
+      questions.forEach(function (q) { out.push("• " + q); });
+    }
+    out.push("", "אשמח שתחזרו אליי עם הצעת מחיר ותיאום מדידה.");
+    return out.join("\n");
+  }
+
+  function plainSummary() {
+    return waSummary().replace(/\*/g, "");
+  }
+
+  function finish() {
+    finished = true;
+    current = null;
+    optsEl.innerHTML = "";
+    rowEl.style.display = "none";
+    progEl.style.width = "100%";
+
+    var text = waSummary();
+
+    say("זה מה שהצלחתי לאסוף:", "bot", function () {
+      bubble(text.replace(/\*/g, ""), "sum");
+
+      var lead = {
+        name: answers.name || "",
+        phone: answers.phone || "",
+        address: answers.address || "",
+        project: answers.type || answers.which || "",
+        notes: plainSummary(),
+        source: (location.hostname || "landing") + " · אשף"
+      };
+
+      sendLead(lead)["catch"](function () { /* השליחה לוואטסאפ היא הגיבוי */ });
+
+      var wrap = document.createElement("div");
+      wrap.className = "bot-done";
+
+      var a = document.createElement("a");
+      a.className = "wa-btn";
+      a.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(text);
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23z"/></svg><span>שליחת הסיכום בוואטסאפ</span>';
+      wrap.appendChild(a);
+
+      var note = document.createElement("p");
+      note.className = "bot-hint";
+      note.textContent = "הכפתור פותח את וואטסאפ עם הסיכום כבר מוכן — רק ללחוץ שליחה.";
+      wrap.appendChild(note);
+
+      optsEl.parentNode.insertBefore(wrap, optsEl);
+      scrollLog();
+      a.focus();
+    });
+  }
+
+  function start() {
+    if (started) return;
+    started = true;
+    say("היי! אני אשף הפרויקט של עץ וצל. אשאל כמה שאלות קצרות, ובסוף אכין סיכום מוכן לשליחה בוואטסאפ — כדי שתקבלו תשובה ממשית, ולא תשובה מתחמקת.", "bot", function () {
+      say("בדרך אפשר לעצור ולשאול אותי כל שאלה. פשוט כתבו אותה בשורת ההקלדה.", "bot", function () {
+        queue = [];
+        ask({ key:"type", label:"מה בונים", q:"נתחיל מהעיקר — מה בונים?",
+              opts:["פרגולה","דק","מעקה","גדר","כמה דברים ביחד","עוד לא החלטתי"] });
+      });
+    });
+  }
+
+  function openBot(btn) {
+    opener = btn || null;
+    botEl.hidden = false;
+    document.body.style.overflow = "hidden";
+    start();
+    window.setTimeout(function () { textEl.focus(); }, 50);
+  }
+
+  function closeBot() {
+    botEl.hidden = true;
+    document.body.style.overflow = "";
+    if (opener && opener.focus) opener.focus();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bot-open]"), function (b) {
+    b.addEventListener("click", function () { openBot(b); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bot-close]"), function (b) {
+    b.addEventListener("click", closeBot);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (botEl.hidden) return;
+    if (e.key === "Escape") { closeBot(); return; }
+    if (e.key !== "Tab") return;
+    // מלכודת מיקוד פשוטה, כדי ש-Tab לא יברח לדף שמאחור
+    var f = panelEl.querySelectorAll('a[href],button:not([disabled]),input,textarea,[tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 })();
 </script>
