@@ -6,11 +6,9 @@
 (function () {
   "use strict";
   var C = window.PERGULA || {};
-  var href = "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(C.whatsappText || "");
 
-  Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
-    el.setAttribute("href", href);
-  });
+  // נוסח ההודעה, כולל שורת המקור וסיכום הפרטים, מגיע מ-wa-message.js
+  window.PERGULA_WA.refresh();
   Array.prototype.forEach.call(document.querySelectorAll("[data-wa-num]"), function (el) {
     el.textContent = C.whatsappDisplay || "";
   });

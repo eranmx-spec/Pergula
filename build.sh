@@ -12,7 +12,7 @@ cd "$(dirname "$0")"
 SITE_URL="https://pergula.online"
 STYLE=$(sed -n '/^<style>$/,/^<\/style>$/p' page.body.html)
 A11Y_UI=$(cat partials/a11y-ui.html)
-CONFIG_JS=$(cat partials/config.js)
+CONFIG_JS=$(cat partials/config.js; echo; cat partials/wa-message.js)
 A11Y_JS=$(cat partials/a11y.js)
 WA_JS=$(cat partials/wa-links.js)
 

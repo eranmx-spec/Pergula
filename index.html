@@ -598,6 +598,83 @@ window.PERGULA = {
   a11yContactPhone: "",
   a11yContactEmail: ""
 };
+
+/* ====================================================================
+   מרכיב את ההודעה שנפתחת בוואטסאפ — בכל העמודים ובכל הכפתורים.
+
+   כל הודעה נפתחת בשורת מקור: האתר, העמוד, והכפתור שנלחץ (ערך
+   התכונה data-wa). אם הלקוח כבר השאיר פרטים, בטופס או באשף, מצורף
+   להודעה גם סיכום שלהם.
+
+   הסיכום נשמר ב-sessionStorage: עובר בין העמודים באותה לשונית,
+   ונמחק כשהיא נסגרת.
+   ==================================================================== */
+window.PERGULA_WA = (function () {
+  "use strict";
+  var C = window.PERGULA || {};
+  var KEY = "pergula-lead";
+  // כתובת קבועה ולא location, כדי שגם בדיקה מקובץ מקומי תציג את האתר האמיתי
+  var SITE_URL = "http://pergula.online/";
+  var PAGES = { "terms.html": "תנאי שימוש", "accessibility.html": "הצהרת נגישות" };
+
+  function sourceLine(where) {
+    var file = location.pathname.split("/").pop();
+    var parts = ["📍 הגיע מאתר " + SITE_URL, PAGES[file] || "דף הבית"];
+    if (where) parts.push(where);
+    return parts.join(" · ");
+  }
+
+  // lead: { kind: "form" | "wizard", rows: [{label, value}], questions: [] }
+  function loadLead() {
+    try { return JSON.parse(sessionStorage.getItem(KEY)); } catch (e) { return null; }
+  }
+
+  function saveLead(lead) {
+    try { sessionStorage.setItem(KEY, JSON.stringify(lead)); } catch (e) { /* ההודעה הנוכחית עדיין תכלול אותו */ }
+    refresh(lead);
+  }
+
+  // שורות הסיכום עם הדגשות וואטסאפ (*...*)
+  function summary(lead) {
+    var out = [];
+    lead.rows.forEach(function (r) {
+      if (r.value && r.value !== "—") out.push("*" + r.label + ":* " + r.value);
+    });
+    if (lead.questions && lead.questions.length) {
+      out.push("", "*שאלות שלי:*");
+      lead.questions.forEach(function (q) { out.push("• " + q); });
+    }
+    return out.join("\n");
+  }
+
+  function text(where, lead) {
+    lead = lead || loadLead();
+    var out = [sourceLine(where), ""];
+    if (!lead || !lead.rows) {
+      out.push(C.whatsappText || "");
+    } else {
+      out.push(lead.kind === "wizard"
+        ? "היי, מילאתי את אשף הפרויקט באתר. זה הסיכום:"
+        : "היי, השארתי פרטים באתר. זה הסיכום:");
+      out.push("", summary(lead), "", "אשמח שתחזרו אליי עם הצעת מחיר ותיאום מדידה.");
+    }
+    return out.join("\n");
+  }
+
+  function href(where, lead) {
+    return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(text(where, lead));
+  }
+
+  // מעדכן את כל קישורי [data-wa] בעמוד. נקרא אחרי שה-DOM קיים.
+  function refresh(lead) {
+    lead = lead || loadLead();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
+      el.setAttribute("href", href(el.getAttribute("data-wa"), lead));
+    });
+  }
+
+  return { text: text, href: href, summary: summary, saveLead: saveLead, refresh: refresh };
+})();
 </script>
 <a class="skip" href="#main">דילוג לתוכן הראשי</a>
 
@@ -672,7 +749,7 @@ window.PERGULA = {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
       אשף הפרויקט
     </button>
-    <a class="wa-btn sm" href="#" data-wa target="_blank" rel="noopener">
+    <a class="wa-btn sm" href="#" data-wa="כפתור בראש הדף" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
       וואטסאפ
     </a>
@@ -752,7 +829,7 @@ window.PERGULA = {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
             אשף הפרויקט
           </button>
-          <a class="wa-btn" href="#" data-wa target="_blank" rel="noopener">
+          <a class="wa-btn" href="#" data-wa="ליד טופס הפרטים" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
             וואטסאפ
           </a>
@@ -768,7 +845,7 @@ window.PERGULA = {
         </svg>
         <h2>קיבלנו את הפרטים</h2>
         <p class="done-msg">נחזור אליכם בוואטסאפ תוך יום עסקים אחד לתיאום ביקור מדידה. אם נוח לכם, אפשר לפתוח את השיחה כבר עכשיו ולשלוח תמונה של המקום.</p>
-        <a class="wa-btn" href="#" data-wa target="_blank" rel="noopener">
+        <a class="wa-btn" href="#" data-wa="מסך האישור אחרי השארת פרטים" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
           פתיחת שיחה
         </a>
@@ -1004,7 +1081,7 @@ window.PERGULA = {
         <li><span class="k">היישוב</span><span class="v">לזמינות התקנה</span></li>
         <li><span class="k">מה בונים</span><span class="v">פרגולה / דק / מעקה / גדר</span></li>
       </ul>
-      <a class="wa-btn block" href="#" data-wa target="_blank" rel="noopener">
+      <a class="wa-btn block" href="#" data-wa="סעיף „למה וואטסאפ״" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
         פתיחת שיחה בוואטסאפ
       </a>
@@ -1023,7 +1100,7 @@ window.PERGULA = {
     <h2>נתחיל במדידה?</h2>
     <p>שלחו הודעה, או מלאו את הפרטים ואנחנו נפתח את השיחה. ללא עלות וללא התחייבות.</p>
     <div class="cta-row">
-      <a class="wa-btn" href="#" data-wa target="_blank" rel="noopener">
+      <a class="wa-btn" href="#" data-wa="הקריאה לפעולה בסוף הדף" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
         כתבו לנו בוואטסאפ
       </a>
@@ -1041,7 +1118,7 @@ window.PERGULA = {
 <footer>
   <div class="wrap foot">
     <span>עץ וצל · נגרות חוץ · פרגולות, דקים, מעקות וגדרות</span>
-    <span>וואטסאפ <a href="#" data-wa target="_blank" rel="noopener"><span data-wa-num>055-927-2777</span></a></span>
+    <span>וואטסאפ <a href="#" data-wa="תחתית הדף" target="_blank" rel="noopener"><span data-wa-num>055-927-2777</span></a></span>
   </div>
   <div class="wrap foot foot-legal">
     <span><a href="terms.html">תנאי שימוש</a> · <a href="terms.html#privacy">פרטיות</a> · <a href="accessibility.html">הצהרת נגישות</a></span>
@@ -1056,7 +1133,7 @@ window.PERGULA = {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.3c0 3.9-3.8 7-8.5 7-.85 0-1.67-.1-2.44-.3-1 .72-2.5 1.53-4.4 1.95.8-1.05 1.28-2.2 1.42-3.44C4.6 15.2 3.5 13.36 3.5 11.3c0-3.87 3.8-7 8.5-7s8.5 3.13 8.5 7z"/><path d="M8.7 11.3h.01M12 11.3h.01M15.3 11.3h.01" stroke-width="2.4"/></svg>
     <span class="lbl-wide">אשף הפרויקט</span><span class="lbl-tight">אשף</span>
   </button>
-  <a class="f-wa" href="#" data-wa target="_blank" rel="noopener">
+  <a class="f-wa" href="#" data-wa="הכפתור הצף" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
     <span class="lbl-wide">כתבו לנו בוואטסאפ</span><span class="lbl-tight">וואטסאפ</span>
   </a>
@@ -1099,12 +1176,10 @@ window.PERGULA = {
   var CONFIG = window.PERGULA || {};
 
   var configured = String(CONFIG.endpoint).indexOf("http") === 0;
-  var waText = encodeURIComponent(CONFIG.whatsappText || "");
-  var waHref = "https://wa.me/" + CONFIG.whatsapp + "?text=" + waText;
 
-  Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
-    el.setAttribute("href", waHref);
-  });
+  // נוסח הודעת הוואטסאפ (שורת מקור + סיכום פרטים) מגיע מ-partials/wa-message.js
+  var WA = window.PERGULA_WA;
+  WA.refresh();
   Array.prototype.forEach.call(document.querySelectorAll("[data-wa-num]"), function (el) {
     el.textContent = CONFIG.whatsappDisplay;
   });
@@ -1177,6 +1252,15 @@ window.PERGULA = {
       source: location.hostname || "landing"
     };
 
+    // מרגע שהפרטים הושארו, כל כפתור וואטסאפ באתר יצרף אותם להודעה
+    WA.saveLead({ kind: "form", rows: [
+      { label: "שם", value: lead.name },
+      { label: "וואטסאפ", value: lead.phone },
+      { label: "יישוב וכתובת", value: lead.address },
+      { label: "מה בונים", value: lead.project },
+      { label: "פרטים נוספים", value: lead.notes }
+    ] });
+
     btn.disabled = true;
     btn.textContent = "שולח…";
     errBox.style.display = "none";
@@ -1198,7 +1282,7 @@ window.PERGULA = {
       btn.textContent = BTN_LABEL;
       errBox.innerHTML =
         'השליחה נכשלה, וזה תמיד מעצבן. אפשר פשוט ' +
-        '<a href="' + waHref + '" target="_blank" rel="noopener">לכתוב לנו בוואטסאפ</a> — ' +
+        '<a href="' + WA.href("הודעת שגיאה בטופס") + '" target="_blank" rel="noopener">לכתוב לנו בוואטסאפ</a> — ' +
         'זה מגיע אלינו ישר.';
       errBox.style.display = "block";
     });
@@ -1438,23 +1522,6 @@ window.PERGULA = {
     accept(skipOrAnswer(current, txt));
   });
 
-  function waSummary() {
-    var out = ["היי, סיימתי את אשף הפרויקט באתר.", ""];
-    record.forEach(function (r) {
-      if (r.value && r.value !== "—") out.push("*" + r.label + ":* " + r.value);
-    });
-    if (questions.length) {
-      out.push("", "*שאלות שלי:*");
-      questions.forEach(function (q) { out.push("• " + q); });
-    }
-    out.push("", "אשמח שתחזרו אליי עם הצעת מחיר ותיאום מדידה.");
-    return out.join("\n");
-  }
-
-  function plainSummary() {
-    return waSummary().replace(/\*/g, "");
-  }
-
   function finish() {
     finished = true;
     current = null;
@@ -1462,9 +1529,13 @@ window.PERGULA = {
     rowEl.style.display = "none";
     progEl.style.width = "100%";
 
-    var text = waSummary();
+    // נשמר כדי שגם כפתורי הוואטסאפ האחרים באתר יצרפו את הסיכום
+    var summary = { kind: "wizard", rows: record, questions: questions };
+    WA.saveLead(summary);
+    var text = WA.text("אשף הפרויקט", summary);
 
     say("זה מה שהצלחתי לאסוף:", "bot", function () {
+      // הלקוח רואה בדיוק את מה שיישלח, כולל שורת המקור
       bubble(text.replace(/\*/g, ""), "sum");
 
       var lead = {
@@ -1472,7 +1543,7 @@ window.PERGULA = {
         phone: answers.phone || "",
         address: answers.address || "",
         project: answers.type || answers.which || "",
-        notes: plainSummary(),
+        notes: WA.summary(summary).replace(/\*/g, ""),
         source: (location.hostname || "landing") + " · אשף"
       };
 
@@ -1483,7 +1554,7 @@ window.PERGULA = {
 
       var a = document.createElement("a");
       a.className = "wa-btn";
-      a.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(text);
+      a.href = WA.href("אשף הפרויקט", summary);
       a.target = "_blank";
       a.rel = "noopener";
       a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.41 5.82c0 4.54-3.7 8.23-8.24 8.23z"/></svg><span>שליחת הסיכום בוואטסאפ</span>';

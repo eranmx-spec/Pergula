@@ -637,6 +637,83 @@ window.PERGULA = {
   a11yContactPhone: "",
   a11yContactEmail: ""
 };
+
+/* ====================================================================
+   מרכיב את ההודעה שנפתחת בוואטסאפ — בכל העמודים ובכל הכפתורים.
+
+   כל הודעה נפתחת בשורת מקור: האתר, העמוד, והכפתור שנלחץ (ערך
+   התכונה data-wa). אם הלקוח כבר השאיר פרטים, בטופס או באשף, מצורף
+   להודעה גם סיכום שלהם.
+
+   הסיכום נשמר ב-sessionStorage: עובר בין העמודים באותה לשונית,
+   ונמחק כשהיא נסגרת.
+   ==================================================================== */
+window.PERGULA_WA = (function () {
+  "use strict";
+  var C = window.PERGULA || {};
+  var KEY = "pergula-lead";
+  // כתובת קבועה ולא location, כדי שגם בדיקה מקובץ מקומי תציג את האתר האמיתי
+  var SITE_URL = "http://pergula.online/";
+  var PAGES = { "terms.html": "תנאי שימוש", "accessibility.html": "הצהרת נגישות" };
+
+  function sourceLine(where) {
+    var file = location.pathname.split("/").pop();
+    var parts = ["📍 הגיע מאתר " + SITE_URL, PAGES[file] || "דף הבית"];
+    if (where) parts.push(where);
+    return parts.join(" · ");
+  }
+
+  // lead: { kind: "form" | "wizard", rows: [{label, value}], questions: [] }
+  function loadLead() {
+    try { return JSON.parse(sessionStorage.getItem(KEY)); } catch (e) { return null; }
+  }
+
+  function saveLead(lead) {
+    try { sessionStorage.setItem(KEY, JSON.stringify(lead)); } catch (e) { /* ההודעה הנוכחית עדיין תכלול אותו */ }
+    refresh(lead);
+  }
+
+  // שורות הסיכום עם הדגשות וואטסאפ (*...*)
+  function summary(lead) {
+    var out = [];
+    lead.rows.forEach(function (r) {
+      if (r.value && r.value !== "—") out.push("*" + r.label + ":* " + r.value);
+    });
+    if (lead.questions && lead.questions.length) {
+      out.push("", "*שאלות שלי:*");
+      lead.questions.forEach(function (q) { out.push("• " + q); });
+    }
+    return out.join("\n");
+  }
+
+  function text(where, lead) {
+    lead = lead || loadLead();
+    var out = [sourceLine(where), ""];
+    if (!lead || !lead.rows) {
+      out.push(C.whatsappText || "");
+    } else {
+      out.push(lead.kind === "wizard"
+        ? "היי, מילאתי את אשף הפרויקט באתר. זה הסיכום:"
+        : "היי, השארתי פרטים באתר. זה הסיכום:");
+      out.push("", summary(lead), "", "אשמח שתחזרו אליי עם הצעת מחיר ותיאום מדידה.");
+    }
+    return out.join("\n");
+  }
+
+  function href(where, lead) {
+    return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(text(where, lead));
+  }
+
+  // מעדכן את כל קישורי [data-wa] בעמוד. נקרא אחרי שה-DOM קיים.
+  function refresh(lead) {
+    lead = lead || loadLead();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
+      el.setAttribute("href", href(el.getAttribute("data-wa"), lead));
+    });
+  }
+
+  return { text: text, href: href, summary: summary, saveLead: saveLead, refresh: refresh };
+})();
 </script>
 <a class="skip" href="#main">דילוג לתוכן הראשי</a>
 
@@ -778,6 +855,7 @@ window.PERGULA = {
   <li>מסירת הפרטים היא מרצון. אינכם חייבים למסור אותם, אך בלעדיהם לא נוכל לחזור אליכם.</li>
   <li>אשף הפרויקט פועל כולו בדפדפן שלכם. הוא אינו שולח דבר עד שאתם מסיימים ולוחצים על שליחה.</li>
   <li>העדפות הנגישות נשמרות בדפדפן שלכם בלבד (localStorage) ואינן מגיעות אלינו.</li>
+  <li>אם השארתם פרטים, הסיכום שלהם נשמר בדפדפן לזמן הביקור בלבד (sessionStorage), כדי שיצורף להודעת הוואטסאפ שתפתחו. הוא נמחק כשסוגרים את הלשונית.</li>
 </ul>
 <p>
   אתם רשאים לבקש לעיין במידע שנאסף עליכם, לתקנו או למחוק אותו. לפנייה בעניין
@@ -822,7 +900,7 @@ window.PERGULA = {
 <h2 id="contact">13. יצירת קשר</h2>
 <p>
   בכל שאלה על תנאים אלה או על המידע שנאסף, אפשר לכתוב לנו בוואטסאפ:
-  <a href="#" data-wa target="_blank" rel="noopener"><span data-wa-num>055-927-2777</span></a>.
+  <a href="#" data-wa="פרטי יצירת קשר" target="_blank" rel="noopener"><span data-wa-num>055-927-2777</span></a>.
 </p>
 
 <div class="doc-flag">
@@ -847,11 +925,9 @@ window.PERGULA = {
 (function () {
   "use strict";
   var C = window.PERGULA || {};
-  var href = "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(C.whatsappText || "");
 
-  Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (el) {
-    el.setAttribute("href", href);
-  });
+  // נוסח ההודעה, כולל שורת המקור וסיכום הפרטים, מגיע מ-wa-message.js
+  window.PERGULA_WA.refresh();
   Array.prototype.forEach.call(document.querySelectorAll("[data-wa-num]"), function (el) {
     el.textContent = C.whatsappDisplay || "";
   });
